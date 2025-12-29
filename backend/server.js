@@ -89,6 +89,37 @@ const analyticsSchema = new mongoose.Schema({
 });
 const Analytics = mongoose.models.Analytics || mongoose.model('Analytics', analyticsSchema);
 
+const seedAdmin = async () => {
+  try {
+    const adminEmail = 'admin@motovibe.tr';
+    const adminPassword = 'admin123'; // In a real app, use environment variable
+
+    let adminUser = await User.findOne({ email: adminEmail });
+
+    if (!adminUser) {
+      console.log('⚠️ Admin kullanıcısı bulunamadı. Oluşturuluyor...');
+      adminUser = new User({
+        name: 'MotoVibe Admin',
+        email: adminEmail,
+        password: adminPassword,
+        isAdmin: true,
+        joinDate: '01.01.2024',
+        address: 'HQ'
+      });
+      await adminUser.save();
+      console.log('✅ Admin kullanıcısı oluşturuldu: admin@motovibe.tr');
+    } else {
+        if (!adminUser.isAdmin) {
+            adminUser.isAdmin = true;
+            await adminUser.save();
+            console.log('✅ Mevcut admin kullanıcısının yetkisi güncellendi.');
+        }
+    }
+  } catch (error) {
+    console.error('Admin seed hatası:', error);
+  }
+};
+
 // --- ROUTES ---
 
 // 1. Auth Routes
@@ -113,17 +144,6 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    
-    // Admin Backdoor (Acil durum girişi için)
-    if (email === 'admin@motovibe.tr' && password === 'admin123') {
-      return res.json({
-        id: 'admin-001',
-        name: 'MotoVibe Admin',
-        email: 'admin@motovibe.tr',
-        isAdmin: true,
-        joinDate: '01.01.2024'
-      });
-    }
 
     const user = await User.findOne({ email, password });
     if (!user) return res.status(400).json({ message: 'Hatalı e-posta veya şifre.' });
@@ -388,8 +408,9 @@ app.get('/api/analytics/dashboard', async (req, res) => {
 console.log('Sunucu başlatılıyor...');
 
 mongoose.connect(MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log('✅ MongoDB bağlantısı başarılı');
+    await seedAdmin();
     app.listen(PORT, () => console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`));
   })
   .catch(err => {
