@@ -9,14 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
     "@google/genai": "^1.30.0",
-    "lucide-react": "^0.554.0",
-    "express": "^5.1.0",
-    "mongoose": "^8.20.0",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "lucide-react": "^0.554.0",
+    "mongoose": "^8.20.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
